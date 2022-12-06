@@ -1,6 +1,6 @@
-package HEIG.vd.interfaces;
+package heig.vd.rekognition.interfaces;
 
-import HEIG.vd.AwsCloudClient;
+import heig.vd.rekognition.AwsCloudClient;
 
 public interface ICloudClient {
     static AwsCloudClient getInstance() {

@@ -1,4 +1,4 @@
-package HEIG.vd.interfaces;
+package heig.vd.rekognition.interfaces;
 
 import java.util.Map;
 

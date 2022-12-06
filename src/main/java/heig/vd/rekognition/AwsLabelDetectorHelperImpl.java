@@ -1,9 +1,8 @@
-package HEIG.vd;
+package heig.vd.rekognition;
 
-import HEIG.vd.interfaces.ILabelDetector;
-import HEIG.vd.utils.GetEnvVal;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import heig.vd.rekognition.interfaces.ILabelDetector;
+import heig.vd.rekognition.utils.GetEnvVal;
+
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.regions.Region;
@@ -47,38 +46,26 @@ public class AwsLabelDetectorHelperImpl implements ILabelDetector {
 
     public Map<String, String> execute(String nameObject, int maxLabels, float minConfidence) {
 
-        AwsCloudClient client = AwsCloudClient.getInstance();
-        String nameObjectResult = nameObject + "-result";
         Map<String, String> result;
-        Gson gson = new Gson();
 
-        if (!client.getDataObject().exist(nameObjectResult)) {
 
-            S3Object s3Object = S3Object
-                    .builder()
-                    .bucket(nameBucket)
-                    .name(nameObject)
-                    .build();
+        S3Object s3Object = S3Object
+                .builder()
+                .bucket(nameBucket)
+                .name(nameObject)
+                .build();
 
-            Image myImage = Image
-                    .builder()
-                    .s3Object(s3Object)
-                    .build();
+        Image myImage = Image
+                .builder()
+                .s3Object(s3Object)
+                .build();
 
-            result = executeRekognition(myImage, maxLabels, minConfidence);
+        result = executeRekognition(myImage, maxLabels, minConfidence);
 
-            String json = gson.toJson(result);
 
-            client.getDataObject().create(nameObjectResult, json.getBytes());
+        return result;
 
-            return result;
 
-        } else {
-            String labels = new String(client.getDataObject().get(nameObjectResult));
-            Type mapType = new TypeToken<Map<String, String>>() {}.getType();
-
-            return gson.fromJson(labels, mapType);
-        }
 
     }
 
