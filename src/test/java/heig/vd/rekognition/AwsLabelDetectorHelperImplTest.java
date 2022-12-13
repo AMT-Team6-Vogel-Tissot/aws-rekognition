@@ -40,10 +40,12 @@ public class AwsLabelDetectorHelperImplTest {
             "Office Building","98.851166", "Outdoors","92.17462"
     );
 
-    private final Map<String,String> resultdefautl = Map.of("Photography","97.4223", "Mammal",
+    private final Map<String,String> resultdefault = Map.of("Photography","97.4223", "Mammal",
             "96.589035", "Accessories","100.0", "Animal","96.589035", "Cat","96.589035",
             "Glasses","99.95992", "Portrait","90.62357", "Person","90.62357", "Pet",
             "96.589035", "Sunglasses","100.0");
+
+
 
     private final String correctMinValNormalCase = "57.032322";
     private final String correctMinValChangeNbLabelsCase = "74.04278";
@@ -65,7 +67,7 @@ public class AwsLabelDetectorHelperImplTest {
         Map<String,String> result = rekognitionService.execute(url);
 
         //then
-        assertEquals(result, resultdefautl);
+        assertEquals(result, resultdefault);
     }
 
     @Test
@@ -74,8 +76,12 @@ public class AwsLabelDetectorHelperImplTest {
     }
 
     @Test
-    void Analyze_MaxLabelsEqual20_ContentFromAwsRekognitionFilterApplied(){
+    void Analyze_MaxLabelsEqual20_ContentFromAwsRekognitionFilterApplied() throws MalformedURLException {
+        String url = "https://images.unsplash.com/photo-1533738363-b7f9aef128ce?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=735&q=80";
 
+        Map<String,String> result = rekognitionService.execute(url,20,50);
+
+        assertEquals(result.size(),20);
     }
 
     @Test
@@ -84,7 +90,12 @@ public class AwsLabelDetectorHelperImplTest {
     }
 
     @Test
-    void Analyse_MaxLabel30AndConfidenceLevel50_ContentFromAwsRekognitionFilterApplied(){
+    void Analyse_MaxLabel30AndConfidenceLevel50_ContentFromAwsRekognitionFilterApplied() throws MalformedURLException {
+        String url = "https://images.unsplash.com/photo-1533738363-b7f9aef128ce?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=735&q=80";
+
+        Map<String,String> result = rekognitionService.execute(url,30,50);
+
+        assertEquals(result.size(), 30);
 
     }
 }
