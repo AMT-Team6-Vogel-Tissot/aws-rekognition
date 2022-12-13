@@ -1,19 +1,18 @@
-package heig.vd.rekognition;
+package heig.vd.rekognition.service;
 
 import heig.vd.rekognition.interfaces.ILabelDetector;
 import heig.vd.rekognition.utils.GetEnvVal;
 
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.rekognition.RekognitionClient;
 import software.amazon.awssdk.services.rekognition.model.*;
 
-import java.lang.reflect.Type;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 
 public class AwsLabelDetectorHelperImpl implements ILabelDetector {
 
@@ -21,15 +20,22 @@ public class AwsLabelDetectorHelperImpl implements ILabelDetector {
 
     private final String nameBucket;
 
-    public AwsLabelDetectorHelperImpl(StaticCredentialsProvider credentialsProvider, Region region){
+    public AwsLabelDetectorHelperImpl(){
 
         rekClient = RekognitionClient
                 .builder()
-                .credentialsProvider(credentialsProvider)
-                .region(region)
+                .credentialsProvider(getCredentials())
+                .region(Region.of(Objects.requireNonNull(GetEnvVal.getEnvVal("REGION"))))
                 .build();
 
         nameBucket = GetEnvVal.getEnvVal("BUCKET");
+    }
+
+    private static AwsCredentialsProvider getCredentials(){
+        String accessKeyID = Objects.requireNonNull(GetEnvVal.getEnvVal("AWS_ACCESS_KEY_ID"));
+        String secretAccessKey = Objects.requireNonNull(GetEnvVal.getEnvVal("AWS_SECRET_ACCESS_KEY"));
+
+        return StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKeyID, secretAccessKey));
     }
 
     @Override

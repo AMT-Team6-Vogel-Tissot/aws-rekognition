@@ -2,7 +2,7 @@ package heig.vd.rekognition;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.AfterEach;
+import heig.vd.rekognition.service.AwsLabelDetectorHelperImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Disabled;
 
@@ -15,8 +15,7 @@ import java.util.Map;
 
 public class AwsLabelDetectorHelperImplTest {
 
-    private final AwsCloudClient bucketManager = AwsCloudClient.getInstance();
-    private final AwsLabelDetectorHelperImpl labelDetectorHelper = bucketManager.getLabelDetector();
+    private final AwsLabelDetectorHelperImpl rekognitionService = new AwsLabelDetectorHelperImpl();
 
     private final String pathToTestFolder = "./filesTest/";
     private final String image1 = "file1.jpg";
@@ -50,140 +49,28 @@ public class AwsLabelDetectorHelperImplTest {
     private final int minConfidenceChangeNbLabelsCase = 80;
 
 
-    @Disabled
     @Test
-    public void Execute_RecoverLabelsWithResultObjectNotExisting_Success() throws IOException {
-        // given
-        Map<String, String> mapResult;
-        assertFalse(this.dataObjectHelper.exist(this.image1));
-        assertFalse(this.dataObjectHelper.exist(this.image1Result));
-        assertTrue(this.dataObjectHelper.exist());
-        String minVal = "101";
+    void Analyze_ParametersDefaultValues_ContentFromAwsRekognitionWithoutFilter_url(){
 
-        this.dataObjectHelper.create(this.image1, Files.readAllBytes(this.path1));
-
-        // when
-        mapResult = this.labelDetectorHelper.execute(this.image1, maxLabelsNormalCase, minConfidenceNormalCase);
-        for (Map.Entry<String, String> val : mapResult.entrySet()) {
-            if(Float.parseFloat(minVal) > Float.parseFloat(val.getValue())){
-                minVal = val.getValue();
-            }
-        }
-
-        // then
-        assertTrue(this.dataObjectHelper.exist(this.image1Result));
-        assertEquals(this.correctMapNormalCase, mapResult);
-        assertEquals(this.maxLabelsNormalCase, mapResult.size());
-        assertEquals(this.correctMinValNormalCase, minVal);
     }
 
-    @Disabled
     @Test
-    public void Execute_RecoverLabelsWithLimitNumberLabels5_Success() throws IOException {
-        // given
-        Map<String, String> mapResult;
-        assertFalse(this.dataObjectHelper.exist(this.image1));
-        assertFalse(this.dataObjectHelper.exist(this.image1Result));
-        assertTrue(this.dataObjectHelper.exist());
-        String minVal = "101";
+    void Analyze_ParametersDefaultValues_ContentFromAwsRekognitionWithoutFilter_base64(){
 
-        this.dataObjectHelper.create(this.image1, Files.readAllBytes(this.path1));
-
-        // when
-        mapResult = this.labelDetectorHelper.execute(this.image1, maxLabelsChangeNbLabelsCase, minConfidenceNormalCase);
-        for (Map.Entry<String, String> val : mapResult.entrySet()) {
-            if(Float.parseFloat(minVal) > Float.parseFloat(val.getValue())){
-                minVal = val.getValue();
-            }
-        }
-
-        // then
-        assertTrue(this.dataObjectHelper.exist(this.image1Result));
-        assertEquals(this.correctMapChangeNbLabelsCase, mapResult);
-        assertEquals(this.maxLabelsChangeNbLabelsCase, mapResult.size());
-        assertEquals(this.correctMinValChangeNbLabelsCase, minVal);
     }
 
-    @Disabled
-
     @Test
-    public void Execute_RecoverLabelsWithLimitMinConfidence80_Success() throws IOException {
-        // given
-        Map<String, String> mapResult;
-        assertFalse(this.dataObjectHelper.exist(this.image1));
-        assertFalse(this.dataObjectHelper.exist(this.image1Result));
-        assertTrue(this.dataObjectHelper.exist());
-        String minVal = "101";
+    void Analyze_MaxLabelsEqual20_ContentFromAwsRekognitionFilterApplied(){
 
-        this.dataObjectHelper.create(this.image1, Files.readAllBytes(this.path1));
-
-        // when
-        mapResult = this.labelDetectorHelper.execute(this.image1, maxLabelsNormalCase, minConfidenceChangeNbLabelsCase);
-        for (Map.Entry<String, String> val : mapResult.entrySet()) {
-            if(Float.parseFloat(minVal) > Float.parseFloat(val.getValue())){
-                minVal = val.getValue();
-            }
-        }
-
-        // then
-        assertTrue(this.dataObjectHelper.exist(this.image1Result));
-        assertEquals(this.correctMapChangeMinConfidenceCase, mapResult);
-        assertEquals(this.correctMaxLabelsMinConfidenceCase, mapResult.size());
-        assertEquals(this.correctMinValChangeMinConfidenceCase, minVal);
     }
 
-    @Disabled
     @Test
-    public void Execute_RecoverLabelsFromResultFile_Success() throws IOException {
-        // given
-        Map<String, String> mapResult;
-        assertFalse(this.dataObjectHelper.exist(this.image1));
-        assertFalse(this.dataObjectHelper.exist(this.image1Result));
-        assertTrue(this.dataObjectHelper.exist());
-        String minVal = "101";
+    void Analyze_MinConfidenceLevelEqual70_ContentFromAwsRekognitionFilterApplied(){
 
-        this.dataObjectHelper.create(this.image1, Files.readAllBytes(this.path1));
-        this.labelDetectorHelper.execute(this.image1, maxLabelsNormalCase, minConfidenceNormalCase);
-
-        // when
-        mapResult = this.labelDetectorHelper.execute(this.image1, maxLabelsNormalCase, minConfidenceNormalCase);
-        for (Map.Entry<String, String> val : mapResult.entrySet()) {
-            if(Float.parseFloat(minVal) > Float.parseFloat(val.getValue())){
-                minVal = val.getValue();
-            }
-        }
-
-        // then
-        assertTrue(this.dataObjectHelper.exist(this.image1Result));
-        assertEquals(this.correctMapNormalCase, mapResult);
-        assertEquals(this.maxLabelsNormalCase, mapResult.size());
-        assertEquals(this.correctMinValNormalCase, minVal);
     }
 
-    @Disabled
     @Test
-    public void ExecuteBase64_RecoverLabelsFromBase64Image_Success() throws IOException {
-        // given
-        Map<String, String> mapResult;
-        assertFalse(this.dataObjectHelper.exist(this.image1));
-        assertFalse(this.dataObjectHelper.exist(this.image1Result));
-        assertTrue(this.dataObjectHelper.exist());
-        String minVal = "101";
+    void Analyse_MaxLabel30AndConfidenceLevel50_ContentFromAwsRekognitionFilterApplied(){
 
-        String imageBase64 = Base64.getEncoder().encodeToString(Files.readAllBytes(this.path1));
-
-        // when
-        mapResult = this.labelDetectorHelper.executeBase64(imageBase64, maxLabelsNormalCase, minConfidenceNormalCase);
-        for (Map.Entry<String, String> val : mapResult.entrySet()) {
-            if(Float.parseFloat(minVal) > Float.parseFloat(val.getValue())){
-                minVal = val.getValue();
-            }
-        }
-
-        // then
-        assertFalse(this.dataObjectHelper.exist(this.image1Result));
-        assertEquals(this.correctMapNormalCase, mapResult);
-        assertEquals(this.maxLabelsNormalCase, mapResult.size());
-        assertEquals(this.correctMinValNormalCase, minVal);
     }
 }
