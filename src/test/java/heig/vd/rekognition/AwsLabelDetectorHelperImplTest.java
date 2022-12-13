@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Disabled;
 
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
@@ -39,6 +40,11 @@ public class AwsLabelDetectorHelperImplTest {
             "Office Building","98.851166", "Outdoors","92.17462"
     );
 
+    private final Map<String,String> resultdefautl = Map.of("Photography","97.4223", "Mammal",
+            "96.589035", "Accessories","100.0", "Animal","96.589035", "Cat","96.589035",
+            "Glasses","99.95992", "Portrait","90.62357", "Person","90.62357", "Pet",
+            "96.589035", "Sunglasses","100.0");
+
     private final String correctMinValNormalCase = "57.032322";
     private final String correctMinValChangeNbLabelsCase = "74.04278";
     private final String correctMinValChangeMinConfidenceCase = "83.2322";
@@ -50,8 +56,16 @@ public class AwsLabelDetectorHelperImplTest {
 
 
     @Test
-    void Analyze_ParametersDefaultValues_ContentFromAwsRekognitionWithoutFilter_url(){
+    void Analyze_ParametersDefaultValues_ContentFromAwsRekognitionWithoutFilter_url() throws MalformedURLException {
+        //given
+        String url = "https://images.unsplash.com/photo-1533738363-b7f9aef128ce?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=735&q=80";
 
+
+        //when
+        Map<String,String> result = rekognitionService.execute(url);
+
+        //then
+        assertEquals(result, resultdefautl);
     }
 
     @Test

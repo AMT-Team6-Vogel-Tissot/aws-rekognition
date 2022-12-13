@@ -12,6 +12,10 @@ import software.amazon.awssdk.services.rekognition.RekognitionClient;
 import software.amazon.awssdk.services.rekognition.model.*;
 
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.*;
 
 public class AwsLabelDetectorHelperImpl implements ILabelDetector {
@@ -50,27 +54,31 @@ public class AwsLabelDetectorHelperImpl implements ILabelDetector {
         return executeRekognition(image, maxLabels, minConfidence);
     }
 
-    public Map<String, String> execute(String nameObject, int maxLabels, float minConfidence) {
+    public Map<String, String> execute(String nameObject) throws MalformedURLException {
+        return execute(nameObject,10,90);
+    }
 
+    public Map<String, String> execute(String nameObject, int maxLabels, float minConfidence) throws MalformedURLException {
+        URL url = new URL(nameObject);
+        byte[] imageBytes;
         Map<String, String> result;
 
+        try (InputStream stream = url.openStream()) {
+            imageBytes = stream.readAllBytes();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-        S3Object s3Object = S3Object
-                .builder()
-                .bucket(nameBucket)
-                .name(nameObject)
-                .build();
 
         Image myImage = Image
                 .builder()
-                .s3Object(s3Object)
+                .bytes(SdkBytes.fromByteArray(imageBytes))
                 .build();
 
         result = executeRekognition(myImage, maxLabels, minConfidence);
 
 
         return result;
-
 
 
     }
