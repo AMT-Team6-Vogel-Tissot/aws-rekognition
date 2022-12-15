@@ -1,35 +1,53 @@
-package heig.vd.rekognition;
+package heig.vd.rekognition.service;
 
-import heig.vd.rekognition.interfaces.ILabelDetector;
+import heig.vd.rekognition.service.interfaces.ILabelDetector;
 import heig.vd.rekognition.utils.GetEnvVal;
 
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.rekognition.RekognitionClient;
 import software.amazon.awssdk.services.rekognition.model.*;
 
-import java.lang.reflect.Type;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-public class AwsLabelDetectorHelperImpl implements ILabelDetector {
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.*;
+
+public class RekognitionService implements ILabelDetector {
 
     private final RekognitionClient rekClient;
-
     private final String nameBucket;
+    private final int DEFAULT_MAX_LABELS = 10;
+    private final float DEFAULT_MIN_CONFIDENCE = 90;
 
-    public AwsLabelDetectorHelperImpl(StaticCredentialsProvider credentialsProvider, Region region){
+    public float getDefaultMinConfidence() {
+        return DEFAULT_MIN_CONFIDENCE;
+    }
+
+    public int getDefaultMaxLabels() {
+        return DEFAULT_MAX_LABELS;
+    }
+
+    public RekognitionService(){
 
         rekClient = RekognitionClient
                 .builder()
-                .credentialsProvider(credentialsProvider)
-                .region(region)
+                .credentialsProvider(getCredentials())
+                .region(Region.of(Objects.requireNonNull(GetEnvVal.getEnvVal("REGION"))))
                 .build();
 
         nameBucket = GetEnvVal.getEnvVal("BUCKET");
+    }
+
+    private static AwsCredentialsProvider getCredentials(){
+        String accessKeyID = Objects.requireNonNull(GetEnvVal.getEnvVal("AWS_ACCESS_KEY_ID"));
+        String secretAccessKey = Objects.requireNonNull(GetEnvVal.getEnvVal("AWS_SECRET_ACCESS_KEY"));
+
+        return StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKeyID, secretAccessKey));
     }
 
     @Override
@@ -44,29 +62,20 @@ public class AwsLabelDetectorHelperImpl implements ILabelDetector {
         return executeRekognition(image, maxLabels, minConfidence);
     }
 
-    public Map<String, String> execute(String nameObject, int maxLabels, float minConfidence) {
+    public Map<String, String> execute(String sURL, int maxLabels, float minConfidence) throws IOException {
+        URL url = new URL(sURL);
+        byte[] imageBytes;
 
-        Map<String, String> result;
+        try (InputStream stream = url.openStream()) {
+            imageBytes = stream.readAllBytes();
+        }
 
-
-        S3Object s3Object = S3Object
+        Image image = Image
                 .builder()
-                .bucket(nameBucket)
-                .name(nameObject)
+                .bytes(SdkBytes.fromByteArray(imageBytes))
                 .build();
 
-        Image myImage = Image
-                .builder()
-                .s3Object(s3Object)
-                .build();
-
-        result = executeRekognition(myImage, maxLabels, minConfidence);
-
-
-        return result;
-
-
-
+        return executeRekognition(image, maxLabels, minConfidence);
     }
 
     private Map<String, String> executeRekognition(Image image, int maxLabels, float minConfidence) {
