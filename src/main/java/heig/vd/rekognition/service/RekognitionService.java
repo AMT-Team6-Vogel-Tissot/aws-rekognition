@@ -1,6 +1,6 @@
 package heig.vd.rekognition.service;
 
-import heig.vd.rekognition.interfaces.ILabelDetector;
+import heig.vd.rekognition.service.interfaces.ILabelDetector;
 import heig.vd.rekognition.utils.GetEnvVal;
 
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;

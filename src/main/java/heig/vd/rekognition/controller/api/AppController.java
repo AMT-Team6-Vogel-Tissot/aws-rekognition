@@ -41,22 +41,6 @@ public class AppController {
             throw new URLNotReachableException(rekognitionRequest.source());
         }
 
-        return executeRekognition(rekognitionRequest);
-    }
-
-    @GetMapping("/analyse/base64")
-    public Map<String, String> executeBase64(@Valid @RequestBody RekognitionRequest rekognitionRequest) {
-
-        try{
-            Base64.getDecoder().decode(rekognitionRequest.source());
-        } catch (IllegalArgumentException e) {
-            throw new Base64InvalidException(rekognitionRequest.source());
-        }
-
-        return executeRekognition(rekognitionRequest);
-    }
-
-    private Map<String, String> executeRekognition(RekognitionRequest rekognitionRequest){
         Map<String, String> result;
         int maxLabels = rekognitionRequest.maxLabels() == null ? service.getDefaultMaxLabels() : rekognitionRequest.maxLabels();
         float minConfidence = rekognitionRequest.minConfidence() == null ? service.getDefaultMinConfidence() : rekognitionRequest.minConfidence();
@@ -66,7 +50,22 @@ public class AppController {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
         return result;
     }
 
+    @GetMapping("/analyse/base64")
+    public Map<String, String> executeBase64(@Valid @RequestBody RekognitionRequest rekognitionRequest) {
+
+        int maxLabels = rekognitionRequest.maxLabels() == null ? service.getDefaultMaxLabels() : rekognitionRequest.maxLabels();
+        float minConfidence = rekognitionRequest.minConfidence() == null ? service.getDefaultMinConfidence() : rekognitionRequest.minConfidence();
+
+        try{
+            Base64.getDecoder().decode(rekognitionRequest.source());
+        } catch (IllegalArgumentException e) {
+            throw new Base64InvalidException(rekognitionRequest.source());
+        }
+
+        return service.executeBase64(rekognitionRequest.source(), maxLabels, minConfidence);
+    }
 }

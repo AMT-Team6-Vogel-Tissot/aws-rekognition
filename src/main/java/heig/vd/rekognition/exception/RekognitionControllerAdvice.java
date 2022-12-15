@@ -13,9 +13,9 @@ import java.util.Date;
 public class RekognitionControllerAdvice {
 
     @ResponseBody
-    @ExceptionHandler(MalformedURLException.class)
+    @ExceptionHandler(URLNotReachableException.class)
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    public ErrorMessage URLNotReachable(MalformedURLException e){
+    public ErrorMessage URLNotReachable(URLNotReachableException e){
         return new ErrorMessage(HttpStatus.UNPROCESSABLE_ENTITY.value(), new Date(), e.getMessage());
     }
 
@@ -24,5 +24,12 @@ public class RekognitionControllerAdvice {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorMessage FileTreatmentError(FileTreatmentErrorException e){
         return new ErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR.value(), new Date(), e.getMessage());
+    }
+
+    @ResponseBody
+    @ExceptionHandler(Base64InvalidException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    public ErrorMessage Base64Invalid(Base64InvalidException e){
+        return new ErrorMessage(HttpStatus.UNPROCESSABLE_ENTITY.value(), new Date(), e.getMessage());
     }
 }

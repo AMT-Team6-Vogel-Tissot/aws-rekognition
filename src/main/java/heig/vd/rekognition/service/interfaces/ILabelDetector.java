@@ -1,4 +1,4 @@
-package heig.vd.rekognition.interfaces;
+package heig.vd.rekognition.service.interfaces;
 
 import java.io.IOException;
 import java.net.MalformedURLException;

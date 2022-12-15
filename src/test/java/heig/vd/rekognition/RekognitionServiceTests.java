@@ -12,7 +12,7 @@ import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.Map;
 
-public class RekognitionServiceTest {
+public class RekognitionServiceTests {
 
     private final RekognitionService rekognitionService = new RekognitionService();
 
