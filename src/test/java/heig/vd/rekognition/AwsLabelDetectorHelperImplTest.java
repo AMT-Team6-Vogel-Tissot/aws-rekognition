@@ -58,13 +58,12 @@ public class AwsLabelDetectorHelperImplTest {
 
 
     @Test
-    void Analyze_ParametersDefaultValues_ContentFromAwsRekognitionWithoutFilter_url() throws MalformedURLException {
+    void Analyze_ParametersDefaultValues_ContentFromAwsRekognitionWithoutFilter_url() throws IOException {
         //given
         String url = "https://images.unsplash.com/photo-1533738363-b7f9aef128ce?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=735&q=80";
 
-
         //when
-        Map<String,String> result = rekognitionService.execute(url);
+        Map<String,String> result = rekognitionService.execute(url, rekognitionService.getDEFAULT_MAX_LABELS(), rekognitionService.getDEFAULT_MIN_CONFIDENCE());
 
         //then
         assertEquals(result, resultdefault);
@@ -76,7 +75,7 @@ public class AwsLabelDetectorHelperImplTest {
     }
 
     @Test
-    void Analyze_MaxLabelsEqual20_ContentFromAwsRekognitionFilterApplied() throws MalformedURLException {
+    void Analyze_MaxLabelsEqual20_ContentFromAwsRekognitionFilterApplied() throws IOException {
         String url = "https://images.unsplash.com/photo-1533738363-b7f9aef128ce?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=735&q=80";
 
         Map<String,String> result = rekognitionService.execute(url,20,50);
@@ -90,7 +89,7 @@ public class AwsLabelDetectorHelperImplTest {
     }
 
     @Test
-    void Analyse_MaxLabel30AndConfidenceLevel50_ContentFromAwsRekognitionFilterApplied() throws MalformedURLException {
+    void Analyse_MaxLabel30AndConfidenceLevel50_ContentFromAwsRekognitionFilterApplied() throws IOException {
         String url = "https://images.unsplash.com/photo-1533738363-b7f9aef128ce?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=735&q=80";
 
         Map<String,String> result = rekognitionService.execute(url,30,50);

@@ -24,6 +24,17 @@ public class AwsLabelDetectorHelperImpl implements ILabelDetector {
 
     private final String nameBucket;
 
+    private final int DEFAULT_MAX_LABELS = 10;
+    private final float DEFAULT_MIN_CONFIDENCE = 50;
+
+    public float getDEFAULT_MIN_CONFIDENCE() {
+        return DEFAULT_MIN_CONFIDENCE;
+    }
+
+    public int getDEFAULT_MAX_LABELS() {
+        return DEFAULT_MAX_LABELS;
+    }
+
     public AwsLabelDetectorHelperImpl(){
 
         rekClient = RekognitionClient
@@ -54,21 +65,14 @@ public class AwsLabelDetectorHelperImpl implements ILabelDetector {
         return executeRekognition(image, maxLabels, minConfidence);
     }
 
-    public Map<String, String> execute(String nameObject) throws MalformedURLException {
-        return execute(nameObject,10,90);
-    }
-
-    public Map<String, String> execute(String nameObject, int maxLabels, float minConfidence) throws MalformedURLException {
-        URL url = new URL(nameObject);
+    public Map<String, String> execute(String sURL, int maxLabels, float minConfidence) throws IOException {
+        URL url = new URL(sURL);
         byte[] imageBytes;
         Map<String, String> result;
 
         try (InputStream stream = url.openStream()) {
             imageBytes = stream.readAllBytes();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
-
 
         Image myImage = Image
                 .builder()
@@ -77,10 +81,7 @@ public class AwsLabelDetectorHelperImpl implements ILabelDetector {
 
         result = executeRekognition(myImage, maxLabels, minConfidence);
 
-
         return result;
-
-
     }
 
     private Map<String, String> executeRekognition(Image image, int maxLabels, float minConfidence) {
