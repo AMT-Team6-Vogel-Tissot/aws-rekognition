@@ -14,28 +14,25 @@ import software.amazon.awssdk.services.rekognition.model.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
-public class AwsLabelDetectorHelperImpl implements ILabelDetector {
+public class RekognitionService implements ILabelDetector {
 
     private final RekognitionClient rekClient;
-
     private final String nameBucket;
-
     private final int DEFAULT_MAX_LABELS = 10;
-    private final float DEFAULT_MIN_CONFIDENCE = 50;
+    private final float DEFAULT_MIN_CONFIDENCE = 90;
 
-    public float getDEFAULT_MIN_CONFIDENCE() {
+    public float getDefaultMinConfidence() {
         return DEFAULT_MIN_CONFIDENCE;
     }
 
-    public int getDEFAULT_MAX_LABELS() {
+    public int getDefaultMaxLabels() {
         return DEFAULT_MAX_LABELS;
     }
 
-    public AwsLabelDetectorHelperImpl(){
+    public RekognitionService(){
 
         rekClient = RekognitionClient
                 .builder()
@@ -68,20 +65,17 @@ public class AwsLabelDetectorHelperImpl implements ILabelDetector {
     public Map<String, String> execute(String sURL, int maxLabels, float minConfidence) throws IOException {
         URL url = new URL(sURL);
         byte[] imageBytes;
-        Map<String, String> result;
 
         try (InputStream stream = url.openStream()) {
             imageBytes = stream.readAllBytes();
         }
 
-        Image myImage = Image
+        Image image = Image
                 .builder()
                 .bytes(SdkBytes.fromByteArray(imageBytes))
                 .build();
 
-        result = executeRekognition(myImage, maxLabels, minConfidence);
-
-        return result;
+        return executeRekognition(image, maxLabels, minConfidence);
     }
 
     private Map<String, String> executeRekognition(Image image, int maxLabels, float minConfidence) {

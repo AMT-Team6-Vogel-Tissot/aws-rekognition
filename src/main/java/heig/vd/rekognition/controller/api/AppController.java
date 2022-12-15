@@ -4,17 +4,14 @@ package heig.vd.rekognition.controller.api;
 import heig.vd.rekognition.controller.request.RekognitionRequest;
 import heig.vd.rekognition.exception.Base64InvalidException;
 import heig.vd.rekognition.exception.URLNotReachableException;
-import heig.vd.rekognition.service.AwsLabelDetectorHelperImpl;
+import heig.vd.rekognition.service.RekognitionService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Base64;
 import java.util.Map;
@@ -22,8 +19,8 @@ import java.util.Map;
 
 @RestController
 public class AppController {
-    private final AwsLabelDetectorHelperImpl service;
-    public AppController(){ service = new AwsLabelDetectorHelperImpl();}
+    private final RekognitionService service;
+    public AppController(){ service = new RekognitionService();}
 
     private boolean checkURL(String sURL) {
         try{
@@ -61,8 +58,8 @@ public class AppController {
 
     private Map<String, String> executeRekognition(RekognitionRequest rekognitionRequest){
         Map<String, String> result;
-        int maxLabels = rekognitionRequest.maxLabels() == null ? service.getDEFAULT_MAX_LABELS() : rekognitionRequest.maxLabels();
-        float minConfidence = rekognitionRequest.minConfidence() == null ? service.getDEFAULT_MIN_CONFIDENCE() : rekognitionRequest.minConfidence();
+        int maxLabels = rekognitionRequest.maxLabels() == null ? service.getDefaultMaxLabels() : rekognitionRequest.maxLabels();
+        float minConfidence = rekognitionRequest.minConfidence() == null ? service.getDefaultMinConfidence() : rekognitionRequest.minConfidence();
 
         try {
             result = service.execute(rekognitionRequest.source(), maxLabels, minConfidence);
