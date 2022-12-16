@@ -7,6 +7,7 @@ import heig.vd.rekognition.exception.URLNotReachableException;
 import heig.vd.rekognition.service.RekognitionService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,7 +36,7 @@ public class AppController {
 
     }
 
-    @GetMapping("/analyse")
+    @PostMapping("/analyse")
     public Map<String, String> execute(@Valid @RequestBody RekognitionRequest rekognitionRequest) {
         if(!checkURL(rekognitionRequest.source())) {
             throw new URLNotReachableException(rekognitionRequest.source());
