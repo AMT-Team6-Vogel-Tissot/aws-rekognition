@@ -1,12 +1,10 @@
 package heig.vd.rekognition.controller.api;
 
-
 import heig.vd.rekognition.controller.request.RekognitionRequest;
 import heig.vd.rekognition.exception.Base64InvalidException;
 import heig.vd.rekognition.exception.URLNotReachableException;
 import heig.vd.rekognition.service.RekognitionService;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -55,7 +53,7 @@ public class AppController {
         return result;
     }
 
-    @GetMapping("/analyse/base64")
+    @PostMapping("/analyse/base64")
     public Map<String, String> executeBase64(@Valid @RequestBody RekognitionRequest rekognitionRequest) {
 
         int maxLabels = rekognitionRequest.maxLabels() == null ? service.getDefaultMaxLabels() : rekognitionRequest.maxLabels();
