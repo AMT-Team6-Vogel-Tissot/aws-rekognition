@@ -1,7 +1,6 @@
 package heig.vd.rekognition.service.interfaces;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.Map;
 
 public interface ILabelDetector {
