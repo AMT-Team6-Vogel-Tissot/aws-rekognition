@@ -34,6 +34,7 @@ public class AppController {
 
     }
 
+    // TODO ça devrait etre un GET, pas un post vu que vous modifiez pas la resource
     @PostMapping("/analyse")
     public Map<String, String> execute(@Valid @RequestBody RekognitionRequest rekognitionRequest) {
         if(!checkURL(rekognitionRequest.source())) {
@@ -53,6 +54,8 @@ public class AppController {
         return result;
     }
 
+    // TODO /base64
+    // TODO ça devrait etre un get, pas un post
     @PostMapping("/analyse/base64")
     public Map<String, String> executeBase64(@Valid @RequestBody RekognitionRequest rekognitionRequest) {
 
